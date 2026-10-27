@@ -1,0 +1,254 @@
+LINUX COMMANDS EXPLAINED
+
+This document explains every Linux/Ubuntu command used throughout the project deployment.
+
+------------------------------------------------------------
+
+1. chmod 400 ollama-key.pem
+
+Purpose:
+Changes the permissions of the private SSH key.
+
+Explanation:
+The command gives read permission only to the owner of the file and removes all other permissions.
+
+Why do we need it?
+
+SSH refuses to use a private key if it is accessible by other users because it is considered insecure.
+
+------------------------------------------------------------
+
+2. ssh -i ollama-key.pem ubuntu@<EC2_PUBLIC_IP>
+
+Purpose:
+Connects to the EC2 instance through SSH.
+
+Explanation:
+- ssh starts a Secure Shell connection.
+- -i specifies the private key to use for authentication.
+- ubuntu is the default username for Ubuntu EC2 instances.
+- <EC2_PUBLIC_IP> is the public IP address of the EC2 instance.
+
+Think of this command as opening a remote terminal on your cloud server.
+
+------------------------------------------------------------
+
+3. sudo apt update
+
+Purpose:
+Updates the package index.
+
+Explanation:
+Ubuntu keeps a list of available software packages.
+
+This command refreshes that list so the system knows about the latest package versions before installing anything.
+
+It does NOT install or upgrade software.
+
+------------------------------------------------------------
+
+4. sudo apt install git -y
+
+Purpose:
+Installs Git.
+
+Explanation:
+Git is required to download our project from GitHub.
+
+The -y option automatically answers "Yes" to installation prompts.
+
+------------------------------------------------------------
+
+5. git clone <repository-url>
+
+Purpose:
+Downloads a GitHub repository onto the local machine.
+
+Explanation:
+This command creates a local copy of the project so we can run and modify it.
+
+------------------------------------------------------------
+
+6. cd <repository-name>
+
+Purpose:
+Changes the current working directory.
+
+Explanation:
+After downloading the repository, we move inside the project folder so that all future commands run from the correct location.
+
+------------------------------------------------------------
+
+7. ls
+
+Purpose:
+Lists all files and folders in the current directory.
+
+Explanation:
+We use this command to verify that the repository has been cloned successfully.
+
+------------------------------------------------------------
+
+8. chmod +x setup.sh
+
+Purpose:
+Makes the setup.sh file executable.
+
+Explanation:
+By default, Linux treats a shell script as a normal text file.
+
+This command gives it execute permission so it can be run like a program.
+
+------------------------------------------------------------
+
+9. sudo ./setup.sh --model llama3.2
+
+Purpose:
+Runs the deployment script.
+
+Explanation:
+- sudo runs the script with administrator privileges.
+- ./ tells Linux to execute the script from the current directory.
+- setup.sh is our deployment automation script.
+- --model llama3.2 tells the script which Ollama model to download.
+
+Instead of manually performing many deployment steps, this single command automates the complete deployment.
+
+------------------------------------------------------------
+
+10. curl -X POST http://<EC2_PUBLIC_IP>:8000/generate \
+-H "Content-Type: application/json" \
+-d '{...}'
+
+Purpose:
+Tests the deployed API.
+
+Explanation:
+curl is a command-line tool used to make HTTP requests.
+
+In this example:
+
+- -X POST specifies the HTTP method.
+- -H sends the request header.
+- -d sends the JSON request body.
+
+This command verifies that our deployed LLM is responding correctly without needing a frontend application.
+
+------------------------------------------------------------
+
+11. uv venv
+
+Purpose:
+Creates a Python virtual environment.
+
+Explanation:
+A virtual environment creates an isolated Python environment for this project.
+
+This keeps project dependencies separate from other Python projects on your machine.
+
+------------------------------------------------------------
+
+12. source .venv/bin/activate
+
+Purpose:
+Activates the virtual environment (Mac/Linux).
+
+Explanation:
+Once activated, all Python packages are installed inside the virtual environment instead of globally.
+
+------------------------------------------------------------
+
+13. .venv\Scripts\activate
+
+Purpose:
+Activates the virtual environment (Windows).
+
+Explanation:
+This is the Windows equivalent of the previous command.
+
+------------------------------------------------------------
+
+14. uv pip install -r requirements.txt
+
+Purpose:
+Installs all required Python packages.
+
+Explanation:
+requirements.txt contains the list of libraries needed for this project.
+
+This command installs them automatically.
+
+------------------------------------------------------------
+
+15. pip install streamlit
+
+Purpose:
+Installs Streamlit.
+
+Explanation:
+Streamlit is used only as a simple client application to test our deployed LLM.
+
+It is not part of the cloud deployment.
+
+------------------------------------------------------------
+
+16. streamlit run streamlit_app.py
+
+Purpose:
+Starts the Streamlit application.
+
+Explanation:
+This launches a local web application that communicates with the FastAPI service running on AWS EC2.
+
+The Streamlit application acts as one example client for our deployed LLM.
+
+------------------------------------------------------------
+
+17. docker compose down
+
+Purpose:
+Stops and removes all running containers.
+
+Explanation:
+This command shuts down the entire application stack while keeping the downloaded Docker images and persistent volumes intact.
+
+------------------------------------------------------------
+
+18. docker compose up -d
+
+Purpose:
+Starts the application stack.
+
+Explanation:
+Docker Compose reads the docker-compose.yml file, creates the required containers, and starts all services.
+
+The -d option runs the containers in detached mode, meaning they continue running in the background.
+
+------------------------------------------------------------
+
+19. docker compose logs -f
+
+Purpose:
+Displays container logs in real time.
+
+Explanation:
+This command is useful for debugging.
+
+The -f option continuously streams new log messages as they are generated, similar to watching a live console.
+
+------------------------------------------------------------
+
+Summary
+
+Throughout this project, we primarily used Linux commands for four purposes:
+
+1. Connecting to the EC2 instance.
+2. Installing software and downloading the project.
+3. Deploying the LLM application.
+4. Testing and managing the deployed services.
+
+Notice that only one command actually performs the complete deployment:
+
+sudo ./setup.sh --model llama3.2
+
+Everything else is simply preparation, verification, or management of the deployment.
